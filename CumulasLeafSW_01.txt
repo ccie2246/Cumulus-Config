@@ -1,0 +1,153 @@
+/etc/hostname
+
+ 
+CumulusLeafSW_01
+
+/etc/motd
+
+ 
+                            | \
+
+                           _|  \______________________________________
+
+                          - ______        ________________          \_`,
+
+                        -(_______            -=    -=        WRAF       )
+
+                                 `--------=============----------------`
+
+                                           -   -
+
+                                          -   -
+
+                               `   . .  -  -
+
+                                .*` .* ;`*,`.,
+
+                                 `, ,`.*.*. *
+
+__________________________________*  * ` ^ *____________________________
+
+                                CUMULUSLEAFSW_01
+
+ 
+ 
+tzselect
+
+ 
+echo "TZ='America/Los_Angeles'; export TZ" >> .profile
+
+ 
+/etc/network/interfaces
+
+# This file describes the network interfaces available on your system
+
+# and how to activate them. For more information, see interfaces(5).
+
+ 
+
+# The loopback network interface
+
+auto lo
+
+iface lo inet loopback
+
+ 
+
+# The primary network interface
+
+auto eth0
+
+iface eth0 inet dhcp
+
+ 
+
+# SwitchPort Connected to Local ESXi Host (VLAN 101)
+
+auto swp1
+
+iface swp1
+
+        mtu 1500
+
+ 
+
+VLAN Sub.Interface 101
+
+auto swp1.101
+
+iface swp1.101
+
+ 
+
+ 
+
+#===TEST=====
+
+auto bridge-for-v101
+
+iface bridge-for-v101
+
+        bridge-ports swp1 swp1.101
+
+        address 10.10.20.2/24
+
+        mtu 1500
+
+ 
+
+ 
+
+# Upstream port to SpinSW01 (VLAN FABRIC)
+
+auto swp2
+
+iface swp2
+
+        address 10.1.1.2/30
+
+        mtu 9000
+
+        link-speed 10000
+
+        link-duplex full
+
+        link-autoneg off
+
+ 
+
+# Redundand Link to SpineSW02 (VLAN FABRIC)
+
+auto swp3
+
+iface swp3
+
+        address 10.1.1.8/30
+
+        mtu 9000
+
+        link-speed 10000
+
+        link-duplex full
+
+        link-autoneg off
+
+ 
+
+# Static setup
+
+#iface eth0 inet static
+
+#      address 10.0.2.15
+
+#      netmask 255.255.255.0
+
+#      gateway 10.0.2.2
+
+ 
+ifreload -a
+
+ip -br addr show
+
+sudo  brctl showmacs bridge-for-v101
+
